@@ -1,2 +1,2 @@
 # Sample
-Sample for TortoiseGit
+Sample for TortoiseGit.
