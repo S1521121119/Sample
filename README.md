@@ -1,4 +1,7 @@
 # Welcome to visit my GitHub page
+
+![image](https://github.com/S1521121119/Sample/blob/main/Soul.png)
+
 通常這個頁面都放一些測試小功能，可能會有*LabView*、*C#*、*Python*
 分區塊資料夾，供自己存放一些語法或資料。
 
