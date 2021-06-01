@@ -1,0 +1,6 @@
+EntityFramework執行Add-Miragtion或者Update-Database出現ScriptHalted
+
+原因是win7的Windows Management Framework 是2.0
+查看和升級版本請參考：https://docs.microsoft.com/zh-cn/powershell/scripting/install/installing-windows-powershell?view=powershell-6
+
+也可以直接下載安裝這個：https://www.microsoft.com/en-us/download/details.aspx?id=54616
