@@ -1,130 +1,156 @@
 ﻿using System;
+using System.Runtime.Remoting.Messaging;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Runtime.Remoting.Messaging;//Can't use in C#5.0
+using System.Windows.Forms;
 
 namespace AsynchronousAndMultithreadingDemo
 {
-    #region 說明
-
-    /*
-    同步與非同步多執行緒的區別：
-        1、同步方法卡介面（UI執行緒忙於計算）；非同步多執行緒不卡介面（主執行緒閒置，子執行緒在計算）
-        2、同步方法慢（CPU利用率低、資源耗費少）；非同步多執行緒快（CPU利用率高、資源耗費多）
-        3、同步方法是有序的；非同步方法是無序的（啟動無序、執行時間不確定、結束無序
-
-    實現非同步多執行緒的6種方式與取消多執行緒：
-        1、委託的非同步呼叫
-        2、Thread實現多執行緒
-        3、Task實現多執行緒
-        4、ThreadPool實現多執行緒
-        5、Parallel實現多執行緒
-        6、async和await實現多執行緒
-        7、取消多執行緒
-
-    一、公共類庫
-
-    二、delegate實現多執行緒
-        01、無參無返回值
-        02、無參有返回值
-        03、有參無返回值
-        04、有參有返回值
-        05、非同步回撥
-        06、WaitOne()操作
-        07、IsCompleted判斷
-
-    三、Thread實現多執行緒
-        01、無參無返回值
-        02、無參有返回值
-        03、有參無返回值
-        04、有參有返回值
-        05、非同步回撥
-
-    四、Task實現多執行緒
-        01、Start啟動
-        02、StartNew啟動
-        03、Run啟動
-        04、ContinueWith控制任務順序
-        05、ContinueWhenAny操作
-        06、ContinueWhenAll操作
-        07、WaitAny操作
-        08、WaitAll操作
-        09、WaitAny自定義非阻塞操作
-        10、WaitAll自定義非阻塞操作
-        11、WhenAny操作
-        12、WhenAll操作
-        13、有引數有返回值
-        14、有引數有返回值 不阻塞
-
-    五、ThreadPool實現多執行緒
-        1、QueueUserWorkItem的用法
-
-    六、Parallel實現多執行緒
-        01、For的用法
-        02、Foreach的用法
-        03、Invoke操作
-
-    七、async+await實現多執行緒
-
-    八、取消多執行緒的執行
-        01、CancellationTokenSource的用法1
-        02、CancellationTokenSource的用法2
-        03、ManualResetEvent的用法
-    */
-
-    #endregion 說明
-
-    #region 一、公共類庫
-
-    public delegate void DoSomething();
-
-    public delegate int DoSomethingReturn();
-
-    public delegate void DoMore(int age, string name);
-
-    public delegate int DoMoreReturn(int age, string name);
-
-    public class CommonDelegate
+    public partial class MainForm : Form
     {
-        public static void DoSomethingMethod()
+        private int a;
+
+        public MainForm()
         {
-            Console.WriteLine("Sub-Start【ThreadId=" + Thread.CurrentThread.ManagedThreadId + "】：" + DateTime.Now);
-            Thread.Sleep(3000);
-            Console.WriteLine("Sub-End【ThreadId=" + Thread.CurrentThread.ManagedThreadId + "】：" + DateTime.Now);
+            InitializeComponent();
+            Task task1 = Task.Run(() =>
+            {
+                for (int i = 0; i < 10000; i++)
+                {
+                    a++;
+                    //Console.WriteLine($"a{i}:{ a++}");
+                }
+            });
+            Task task2 = Task.Run(() =>
+            {
+                for (int i = 0; i < 10000; i++)
+                {
+                    a--;
+                    //Console.WriteLine($"b{i}:{ a--}");
+                }
+            });
+            Task.WaitAll(task1, task2);
+            Console.WriteLine(a);
         }
 
-        public static int DoSomethingReturnMethod()
+        #region 說明
+
+        /*
+        同步與非同步多執行緒的區別：
+            1、同步方法卡介面（UI執行緒忙於計算）；非同步多執行緒不卡介面（主執行緒閒置，子執行緒在計算）
+            2、同步方法慢（CPU利用率低、資源耗費少）；非同步多執行緒快（CPU利用率高、資源耗費多）
+            3、同步方法是有序的；非同步方法是無序的（啟動無序、執行時間不確定、結束無序
+
+        實現非同步多執行緒的6種方式與取消多執行緒：
+            1、委託的非同步呼叫
+            2、Thread實現多執行緒
+            3、Task實現多執行緒
+            4、ThreadPool實現多執行緒
+            5、Parallel實現多執行緒
+            6、async和await實現多執行緒
+            7、取消多執行緒
+
+        一、公共類庫
+
+        二、delegate實現多執行緒
+            01、無參無返回值
+            02、無參有返回值
+            03、有參無返回值
+            04、有參有返回值
+            05、非同步回撥
+            06、WaitOne()操作
+            07、IsCompleted判斷
+
+        三、Thread實現多執行緒
+            01、無參無返回值
+            02、無參有返回值
+            03、有參無返回值
+            04、有參有返回值
+            05、非同步回撥
+
+        四、Task實現多執行緒
+            01、Start啟動
+            02、StartNew啟動
+            03、Run啟動
+            04、ContinueWith控制任務順序
+            05、ContinueWhenAny操作
+            06、ContinueWhenAll操作
+            07、WaitAny操作
+            08、WaitAll操作
+            09、WaitAny自定義非阻塞操作
+            10、WaitAll自定義非阻塞操作
+            11、WhenAny操作
+            12、WhenAll操作
+            13、有引數有返回值
+            14、有引數有返回值 不阻塞
+
+        五、ThreadPool實現多執行緒
+            1、QueueUserWorkItem的用法
+
+        六、Parallel實現多執行緒
+            01、For的用法
+            02、Foreach的用法
+            03、Invoke操作
+
+        七、async+await實現多執行緒
+
+        八、取消多執行緒的執行
+            01、CancellationTokenSource的用法1
+            02、CancellationTokenSource的用法2
+            03、ManualResetEvent的用法
+        */
+
+        #endregion 說明
+
+        #region 一、公共類庫
+
+        public delegate void DoSomething();
+
+        public delegate int DoSomethingReturn();
+
+        public delegate void DoMore(int age, string name);
+
+        public delegate int DoMoreReturn(int age, string name);
+
+        public class CommonDelegate
         {
-            Console.WriteLine("Sub-Start【ThreadId=" + Thread.CurrentThread.ManagedThreadId + "】：" + DateTime.Now);
-            Thread.Sleep(3000);
-            Console.WriteLine("Sub-End【ThreadId=" + Thread.CurrentThread.ManagedThreadId + "】：" + DateTime.Now);
-            return 99;
+            public static void DoSomethingMethod()
+            {
+                Console.WriteLine("Sub-Start【ThreadId=" + Thread.CurrentThread.ManagedThreadId + "】：" + DateTime.Now);
+                Thread.Sleep(3000);
+                Console.WriteLine("Sub-End【ThreadId=" + Thread.CurrentThread.ManagedThreadId + "】：" + DateTime.Now);
+            }
+
+            public static int DoSomethingReturnMethod()
+            {
+                Console.WriteLine("Sub-Start【ThreadId=" + Thread.CurrentThread.ManagedThreadId + "】：" + DateTime.Now);
+                Thread.Sleep(3000);
+                Console.WriteLine("Sub-End【ThreadId=" + Thread.CurrentThread.ManagedThreadId + "】：" + DateTime.Now);
+                return 99;
+            }
+
+            public static void DoMoreMethod(int age, string name)
+            {
+                Console.WriteLine("Sub-Start【ThreadId=" + Thread.CurrentThread.ManagedThreadId + "】：" + DateTime.Now);
+                Console.WriteLine("age={0},name={1}", age, name);
+                Thread.Sleep(3000);
+                Console.WriteLine("Sub-End【ThreadId=" + Thread.CurrentThread.ManagedThreadId + "】：" + DateTime.Now);
+            }
+
+            public static int DoMoreReturnMethod(int age, string name)
+            {
+                Console.WriteLine("Sub-Start【ThreadId=" + Thread.CurrentThread.ManagedThreadId + "】：" + DateTime.Now);
+                Console.WriteLine("age={0},name={1}", age, name);
+                Thread.Sleep(3000);
+                Console.WriteLine("Sub-End【ThreadId=" + Thread.CurrentThread.ManagedThreadId + "】：" + DateTime.Now);
+                return 99;
+            }
         }
 
-        public static void DoMoreMethod(int age, string name)
-        {
-            Console.WriteLine("Sub-Start【ThreadId=" + Thread.CurrentThread.ManagedThreadId + "】：" + DateTime.Now);
-            Console.WriteLine("age={0},name={1}", age, name);
-            Thread.Sleep(3000);
-            Console.WriteLine("Sub-End【ThreadId=" + Thread.CurrentThread.ManagedThreadId + "】：" + DateTime.Now);
-        }
+        #endregion 一、公共類庫
 
-        public static int DoMoreReturnMethod(int age, string name)
-        {
-            Console.WriteLine("Sub-Start【ThreadId=" + Thread.CurrentThread.ManagedThreadId + "】：" + DateTime.Now);
-            Console.WriteLine("age={0},name={1}", age, name);
-            Thread.Sleep(3000);
-            Console.WriteLine("Sub-End【ThreadId=" + Thread.CurrentThread.ManagedThreadId + "】：" + DateTime.Now);
-            return 99;
-        }
-    }
+        #region 二、delegate實現多執行緒
 
-    #endregion 一、公共類庫
-
-    #region 二、delegate實現多執行緒
-
-    public class Demo_Delegate
-    {
         //01、無參無返回值
         private void btnNoParamNoReturn_Click(object sender, EventArgs e)
         {
@@ -216,16 +242,13 @@ namespace AsynchronousAndMultithreadingDemo
             }
             Console.WriteLine("Main-End【ThreadId=" + Thread.CurrentThread.ManagedThreadId + "】：" + DateTime.Now);
         }
-    }
 
-    #endregion 二、delegate實現多執行緒
+        #endregion 二、delegate實現多執行緒
 
-    #region 三、Thread實現多執行緒
+        #region 三、Thread實現多執行緒
 
-    internal class Demo_Thread
-    {
         //01、無參無返回值
-        private void btnNoParamNoReturn_Click(object sender, EventArgs e)
+        private void btnNoParamNoReturnThread_Click(object sender, EventArgs e)
         {
             Console.WriteLine("Main-Start【ThreadId=" + Thread.CurrentThread.ManagedThreadId + "】：" + DateTime.Now);
             ThreadStart threadStart = new ThreadStart(CommonDelegate.DoSomethingMethod);
@@ -235,7 +258,7 @@ namespace AsynchronousAndMultithreadingDemo
         }
 
         //02、無參有返回值
-        private void btnNoParamHasReturn_Click(object sender, EventArgs e)
+        private void btnNoParamHasReturnThread_Click(object sender, EventArgs e)
         {
             //Thread預設不支援返回值
             Console.WriteLine("Main-Start【ThreadId=" + Thread.CurrentThread.ManagedThreadId + "】：" + DateTime.Now);
@@ -273,7 +296,7 @@ namespace AsynchronousAndMultithreadingDemo
         }
 
         //03、有參無返回值
-        private void btnHasParamNoReturn_Click(object sender, EventArgs e)
+        private void btnHasParamNoReturnThread_Click(object sender, EventArgs e)
         {
             Console.WriteLine("Main-Start【ThreadId=" + Thread.CurrentThread.ManagedThreadId + "】：" + DateTime.Now);
             //委託方法不能省略引數型別，lambda表示式可省略引數型別
@@ -291,7 +314,7 @@ namespace AsynchronousAndMultithreadingDemo
         }
 
         //04、有參有返回值
-        private void btnHasParamHasReturn_Click(object sender, EventArgs e)
+        private void btnHasParamHasReturnThread_Click(object sender, EventArgs e)
         {
             //Thread預設不支援返回值
             Console.WriteLine("Main-Start【ThreadId=" + Thread.CurrentThread.ManagedThreadId + "】：" + DateTime.Now);
@@ -329,7 +352,7 @@ namespace AsynchronousAndMultithreadingDemo
         }
 
         //05、非同步回撥
-        private void btnCallback_Click(object sender, EventArgs e)
+        private void btnCallbackThread_Click(object sender, EventArgs e)
         {
             //Thread預設不支援回撥
             Console.WriteLine("Main-Start【ThreadId=" + Thread.CurrentThread.ManagedThreadId + "】：" + DateTime.Now);
@@ -360,16 +383,13 @@ namespace AsynchronousAndMultithreadingDemo
             Thread thread = new Thread(start);
             thread.Start();
         }
-    }
 
-    #endregion 三、Thread實現多執行緒
+        #endregion 三、Thread實現多執行緒
 
-    #region 四、Task實現多執行緒
+        #region 四、Task實現多執行緒
 
-    internal class Demo_Task
-    {
         //01、Start啟動
-        private void btnStart1_Click(object sender, EventArgs e)
+        private void btnNoParamNoReturnTask_1_Click(object sender, EventArgs e)
         {
             Console.WriteLine("Main-Start【ThreadId=" + Thread.CurrentThread.ManagedThreadId + "】：" + DateTime.Now);
             Task task = new Task(CommonDelegate.DoSomethingMethod);
@@ -379,7 +399,7 @@ namespace AsynchronousAndMultithreadingDemo
         }
 
         //02、StartNew啟動
-        private void btnStart2_Click(object sender, EventArgs e)
+        private void btnNoParamNoReturnTask_2_Click(object sender, EventArgs e)
         {
             Console.WriteLine("Main-Start【ThreadId=" + Thread.CurrentThread.ManagedThreadId + "】：" + DateTime.Now);
             Task task = new TaskFactory().StartNew(CommonDelegate.DoSomethingMethod);
@@ -388,8 +408,9 @@ namespace AsynchronousAndMultithreadingDemo
         }
 
         //03、Run啟動
-        private void btnStart3_Click(object sender, EventArgs e)
+        private void btnNoParamNoReturnTask_3_Click(object sender, EventArgs e)
         {
+            //Task.Run 是根據 Task.Factory.StartNew 相同邏輯實現，將 Action 帶入其他參數帶入預設值
             Console.WriteLine("Main-Start【ThreadId=" + Thread.CurrentThread.ManagedThreadId + "】：" + DateTime.Now);
             Task task = Task.Run(new Action(CommonDelegate.DoSomethingMethod));
             Thread.Sleep(1000);
@@ -661,7 +682,7 @@ namespace AsynchronousAndMultithreadingDemo
         }
 
         //13、有引數有返回值
-        private void btnHasParamHasReturn_Click(object sender, EventArgs e)
+        private void btnHasParamHasReturnTask_Click(object sender, EventArgs e)
         {
             Console.WriteLine("Main-Start【ThreadId=" + Thread.CurrentThread.ManagedThreadId + "】：" + DateTime.Now);
             Task<int> task1 = new Task<int>(new Func<object, int>((a) =>
@@ -685,7 +706,7 @@ namespace AsynchronousAndMultithreadingDemo
         }
 
         //14、有引數有返回值 不阻塞
-        private void btnHasParamHasReturnNoBlock_Click(object sender, EventArgs e)
+        private void btnHasParamHasReturnTaskNoBlock_Click(object sender, EventArgs e)
         {
             Console.WriteLine("Main-Start【ThreadId=" + Thread.CurrentThread.ManagedThreadId + "】：" + DateTime.Now);
             Task.Run(() =>
@@ -710,16 +731,13 @@ namespace AsynchronousAndMultithreadingDemo
             });
             Console.WriteLine("Main-End【ThreadId=" + Thread.CurrentThread.ManagedThreadId + "】：" + DateTime.Now);
         }
-    }
 
-    #endregion 四、Task實現多執行緒
+        #endregion 四、Task實現多執行緒
 
-    #region 五、ThreadPool實現多執行緒
+        #region 五、ThreadPool實現多執行緒
 
-    internal class Demo_ThreadPool
-    {
         //1、QueueUserWorkItem的用法
-        private void btnQueueUserWorkItem_Click(object sender, EventArgs e)
+        private void BtnQueueUserWorkItem_Click(object sender, EventArgs e)
         {
             Console.WriteLine("Main-Start【ThreadId=" + Thread.CurrentThread.ManagedThreadId + "】：" + DateTime.Now);
             ThreadPool.SetMinThreads(2, 1);
@@ -739,14 +757,11 @@ namespace AsynchronousAndMultithreadingDemo
             }), "wulaaa");
             Console.WriteLine("Main-End【ThreadId=" + Thread.CurrentThread.ManagedThreadId + "】：" + DateTime.Now);
         }
-    }
 
-    #endregion 五、ThreadPool實現多執行緒
+        #endregion 五、ThreadPool實現多執行緒
 
-    #region 六、Parallel實現多執行緒
+        #region 六、Parallel實現多執行緒
 
-    internal class Demo_Parallel
-    {
         //01、For的用法
         private void btnFor_Click(object sender, EventArgs e)
         {
@@ -874,14 +889,11 @@ namespace AsynchronousAndMultithreadingDemo
             );
             Console.WriteLine("Main-End【ThreadId=" + Thread.CurrentThread.ManagedThreadId + "】：" + DateTime.Now);
         }
-    }
 
-    #endregion 六、Parallel實現多執行緒
+        #endregion 六、Parallel實現多執行緒
 
-    #region 七、async+await實現多執行緒
+        #region 七、async+await實現多執行緒
 
-    internal class Demo_asyncAndawait
-    {
         private void btnAsync_Click(object sender, EventArgs e)
         {
             Console.WriteLine("Main-Start【ThreadId=" + Thread.CurrentThread.ManagedThreadId + "】：" + DateTime.Now);
@@ -910,14 +922,11 @@ namespace AsynchronousAndMultithreadingDemo
             await task2;
             Console.WriteLine("Async-End【ThreadId=" + Thread.CurrentThread.ManagedThreadId + "】：" + DateTime.Now);
         }
-    }
 
-    #endregion 七、async+await實現多執行緒
+        #endregion 七、async+await實現多執行緒
 
-    #region 八、取消多執行緒的執行
+        #region 八、取消多執行緒的執行
 
-    internal class Demo_CancelMultiThread
-    {
         /// <summary>
         /// Task+CancellationTokenSource共有三種寫法：
         ///
@@ -1031,7 +1040,7 @@ namespace AsynchronousAndMultithreadingDemo
             //阻塞執行緒
             this.mre.Reset();
         }
-    }
 
-    #endregion 八、取消多執行緒的執行
+        #endregion 八、取消多執行緒的執行
+    }
 }
