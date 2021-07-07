@@ -22,7 +22,7 @@ namespace UserDataBinding
             Timer TmrUpdataUI = new Timer();
 
             TmrUpdataUI.Tick += dataBindingService.TimerTickedToUpdateUIControl;
-            TmrUpdataUI.Interval = 1000;
+            TmrUpdataUI.Interval = 1001;
             TmrUpdataUI.Start();
         }
 
